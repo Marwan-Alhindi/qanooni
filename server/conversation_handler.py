@@ -5,22 +5,24 @@ from dotenv import load_dotenv
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-from retriever import retrieve_relevant_laws
+from .retriever import retrieve_relevant_laws  # تأكد من مسار الاستيراد الصحيح
 
-# Load environment variables
+# ── تحميل مفاتيح البيئة وتهيئة الـ LLM ─────────────────
 load_dotenv()
+llm = ChatOpenAI(
+    openai_api_key=os.getenv("OPENAI_API_KEY"),
+    model_name="gpt-4o"
+)
 
-# Initialize LLM
-openai_key = os.getenv("NEXT_PUBLIC_OPENAI_API_KEY")
-llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4o")
-
-# Prompt templates
-standalone_template = '''
-Given the conversation history (if any) and a question, rewrite the question as a standalone question.
-conversation history: {conv_history}
-question: {question}
-standalone question:
-'''
+# ── سلسلة إعادة صياغة السؤال المستقل ────────────────────
+standalone_template = """
+بالنظر إلى تاريخ المحادثة (إن وجد) والسؤال المطروح، أعد صياغة السؤال بحيث يكون مفهوماً ومستقلاً بذاته.
+تاريخ المحادثة:
+{conv_history}
+السؤال:
+{question}
+السؤال المستقل:
+"""
 standalone_prompt = PromptTemplate(
     template=standalone_template,
     input_variables=["conv_history", "question"]
@@ -31,13 +33,17 @@ standalone_chain = LLMChain(
     output_key="standalone_question"
 )
 
-answer_template = '''
-You are a helpful legal assistant. Based on the provided legal context, answer the user's question.
-context: {context}
-conversation history: {conv_history}
-question: {question}
-answer:
-'''
+# ── سلسلة توليد الإجابة النهائية ──────────────────────
+answer_template = """
+أنت مساعد قانوني مفيد. بناءً على السياق القانوني المقدم، أجب على سؤال المستخدم.
+السياق:
+{context}
+تاريخ المحادثة:
+{conv_history}
+السؤال:
+{question}
+الإجابة:
+"""
 answer_prompt = PromptTemplate(
     template=answer_template,
     input_variables=["context", "conv_history", "question"]
@@ -48,38 +54,39 @@ answer_chain = LLMChain(
     output_key="answer"
 )
 
-# In-memory conversation history
+# ── تخزين تاريخ المحادثة في الذاكرة ───────────────────
 conv_history: list[str] = []
 
-async def progress_conversation(question: str, user_id: str) -> str:
+async def progress_conversation(question: str, top_k: int = 5) -> str:
     """
-    Handle a user question: rewrite it standalone, retrieve relevant laws, and answer.
+    تعيد صياغة السؤال، تستدعي القوانين المتعلقة، ثم تولد الإجابة النهائية.
     """
-    # 1) Format history
+    # 1) دمج تاريخ المحادثة
     formatted_history = "\n".join(conv_history)
 
-    # 2) Generate standalone question
+    # 2) إعادة صياغة السؤال ليصبح مستقلاً
     standalone_q = await standalone_chain.arun(
         question=question,
         conv_history=formatted_history
     )
 
-    # 3) Retrieve relevant laws
-    laws = await retrieve_relevant_laws(standalone_q, user_id)
-    if not laws:
-        response = "No relevant laws found for your query."
-    else:
-        # Build context from retrieved laws
-        context = "\n\n".join([f"{law['title']}: {law['content']}" for law in laws])
-        # 4) Generate final answer
+    # 3) جلب القوانين ذات الصلة
+    laws = await retrieve_relevant_laws(standalone_q, top_k=top_k)
+
+    # 4) بناء السياق والإجابة أو عرض رسالة عدم العثور
+    if laws:
+        # laws هي قائمة من dict بوجود 'title' و'content'
+        ctx = "\n\n".join(f"{l['title']}: {l['content']}" for l in laws)
         response = await answer_chain.arun(
-            context=context,
+            context=ctx,
             conv_history=formatted_history,
             question=question
         )
+    else:
+        response = "عذراً، لم أتمكن من العثور على قوانين ذات صلة."
 
-    # 5) Update history
-    conv_history.append(question)
-    conv_history.append(response)
+    # 5) تحديث تاريخ المحادثة
+    conv_history.append(f"المستخدم: {question}")
+    conv_history.append(f"المساعد: {response}")
 
     return response

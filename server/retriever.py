@@ -1,4 +1,44 @@
-# retriever.py
+# # retriever.py
+
+# import os
+# from dotenv import load_dotenv
+# from supabase import create_client, Client
+# from langchain.embeddings.openai import OpenAIEmbeddings
+# from langchain.vectorstores import SupabaseVectorStore
+
+# # Load .env
+# load_dotenv()
+
+# # Supabase client
+# def get_supabase_client() -> Client:
+#     return create_client(
+#         os.getenv("NEXT_PUBLIC_SUPABASE_URL"),
+#         os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+#     )
+
+# supabase = get_supabase_client()
+
+# # Embedding model
+# emb = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+
+# # Vector store pointed at your new, single-column RPC
+# vectorstore = SupabaseVectorStore(
+#     client=supabase,
+#     table_name="articles",         # still needed so LangChain knows where to apply vector ops
+#     query_name="match_articles",   # must match the RPC above
+#     embedding=emb,
+#     # no select_columns or metadata_columns needed
+# )
+# retriever = vectorstore.as_retriever()
+
+# async def retrieve_relevant_laws(query: str, top_k: int = 5) -> list[str]:
+#     """
+#     Returns the top_k raw article texts most similar to query.
+#     """
+#     docs = await retriever.aget_relevant_documents(query, k=top_k)
+#     # each `d.page_content` is one article_text from the RPC
+#     return [d.page_content for d in docs]
+
 
 import os
 from dotenv import load_dotenv
@@ -6,10 +46,10 @@ from supabase import create_client, Client
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import SupabaseVectorStore
 
-# Load .env
+# ── Load env ───────────────────────────────────
 load_dotenv()
 
-# Supabase client
+# ── Supabase client ────────────────────────────
 def get_supabase_client() -> Client:
     return create_client(
         os.getenv("NEXT_PUBLIC_SUPABASE_URL"),
@@ -18,23 +58,30 @@ def get_supabase_client() -> Client:
 
 supabase = get_supabase_client()
 
-# Embedding model
+# ── Embedding model ────────────────────────────
 emb = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
 
-# Vector store pointed at your new, single-column RPC
+# ── Vector store & retriever ───────────────────
 vectorstore = SupabaseVectorStore(
     client=supabase,
-    table_name="articles",         # still needed so LangChain knows where to apply vector ops
-    query_name="match_articles",   # must match the RPC above
+    table_name="articles",
+    query_name="match_articles",
     embedding=emb,
-    # no select_columns or metadata_columns needed
+    # no extra select_columns needed—your RPC only returns `content`
 )
 retriever = vectorstore.as_retriever()
 
-async def retrieve_relevant_laws(query: str, top_k: int = 5) -> list[str]:
+
+async def retrieve_relevant_laws(query: str, top_k: int = 5) -> list[dict]:
     """
-    Returns the top_k raw article texts most similar to query.
+    Return a list of dicts {"title":..., "content":...}
+    so that conversation_handler can do l['title'], l['content'].
     """
     docs = await retriever.aget_relevant_documents(query, k=top_k)
-    # each `d.page_content` is one article_text from the RPC
-    return [d.page_content for d in docs]
+    return [
+        {
+            "title":   f"Article { d.metadata.get('article_number', idx+1) }",
+            "content": d.page_content or ""
+        }
+        for idx, d in enumerate(docs)
+    ]
