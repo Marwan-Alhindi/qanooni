@@ -1,4 +1,4 @@
-[
+laws = [
     {'article_number' : 1,
      'article_text' : 'يسمى هذا النظام نظام العمل.',
      'clauses' : [] },
