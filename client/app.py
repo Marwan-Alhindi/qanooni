@@ -1,158 +1,109 @@
-# client/pages/chat_app.py
-import os, sys
-import asyncio
-import time
+# client/app.py
+
+import os
+import sys
 import streamlit as st
 from PIL import Image
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 1) Compute project root so we can find logo.png & qanooni package
-ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__),   "..")
-)
+# 1) Ensure your project root is on the path
+ROOT = os.path.abspath(os.path.join(__file__, "..", ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
+# ─────────────────────────────────────────────────────────────────────────────
 
-# 2) Load your logo (make sure logo.png lives in the project root)
+# ─────────────────────────────────────────────────────────────────────────────
+# 2) Load the logo
 logo_path = os.path.join(ROOT, "logo.png")
-if not os.path.exists(logo_path):
+if os.path.exists(logo_path):
+    logo_img = Image.open(logo_path)
+else:
     st.error(f"⚠️ logo.png not found at {logo_path}")
     logo_img = None
-else:
-    logo_img = Image.open(logo_path)
+# ─────────────────────────────────────────────────────────────────────────────
 
-# 3) Now set page config *with* the logo as the tab icon
-st.set_page_config(
-    page_title="Qanooni Legal Assistant",
-    page_icon=logo_img,        # ← uses your PNG as favicon
-    layout="wide",
+# ─────────────────────────────────────────────────────────────────────────────
+# 3) Centered header: only logo + "Qanooni"
+col1, col2, col3 = st.columns([1, 12, 1], gap="medium")
+with col2:
+    logo_col, title_col = st.columns([2, 6], gap="small")
+    with logo_col:
+        if logo_img:
+            st.image(logo_img, width=80)
+    with title_col:
+        st.markdown(
+            "<h1 style='margin:0; padding-top:0.5rem;'>Qanooni</h1>",
+            unsafe_allow_html=True,
+        )
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4) Main subtitle underneath
+st.markdown("## Welcome to your Legal Assistant")
+st.markdown("---")
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5) Intro text
+st.markdown(
+    """
+**Qanooni** brings you a set of streamlined legal-tech tools to:
+
+1. **Quickly retrieve** the exact laws and articles you need.  
+2. **Chat** in natural language to clarify, deep-dive, or get follow-ups.  
+
+---
+
+## 🚀 Our Projects
+
+- **Law Retrieval**  
+  Search by plain-English queries and instantly get the most relevant statutes and articles.
+
+- **Legal Chatbot**  
+  Click the button below to open our chat interface—your conversation will stay saved during this session!
+
+---
+
+### 🔍 How It Helps You
+
+- **Time-saver:** No more sifting through volumes of text.  
+- **On-demand guidance:** Get assistance 24/7.  
+- **Better access:** Democratizes legal research for non-experts.
+
+_We’re constantly adding features—document summarization, citation generation, and more!_
+    """
 )
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 4) Render header with two columns: logo on the left, title on the right
-col_logo, col_title = st.columns([1, 9], gap="small")
-with col_logo:
-    if logo_img:
-        st.image(logo_img, width=128)  # adjust size to your taste
-with col_title:
-    st.markdown(
-        """
-        <div style="padding-left:8px;">
-          <h1 style="margin:0; line-height:1.2;">
-            Qanooni Legal Assistant
-          </h1>
-          <hr style="border-color:#444; width:60%;">
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 4) Rerun helper for different Streamlit versions
-def rerun():
-    try:
-        st.experimental_rerun()
-    except AttributeError:
-        from streamlit.runtime.scriptrunner import RerunData, RerunException
-        raise RerunException(RerunData())
-# ─────────────────────────────────────────────────────────────────────────────
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 5) Initialize state for chat history and recommendations
-if "history" not in st.session_state:
-    st.session_state.history = []  # list of {role, content}
-if "show_recs" not in st.session_state:
-    st.session_state.show_recs = True
-if "rec_selected" not in st.session_state:
-    st.session_state.rec_selected = False
-# ─────────────────────────────────────────────────────────────────────────────
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 6) Recommended questions on first visit
-recommendations = [
-    "When can I deserve a vacation?",
-    "What are my leave entitlements?",
-    "How do I file a grievance?",
-    "Explain company remote-work policy"
-]
-if st.session_state.show_recs:
-    st.subheader("💡 Try one of these questions:")
-    outer1, col_left, col_right, outer2 = st.columns([1, 2, 2, 1], gap="small")
-    if col_left.button(recommendations[0], key="rec_0", use_container_width=True):
-        st.session_state.history.append({"role": "user", "content": recommendations[0]})
-        st.session_state.show_recs = False
-        st.session_state.rec_selected = True
-        rerun()
-    if col_left.button(recommendations[2], key="rec_2", use_container_width=True):
-        st.session_state.history.append({"role": "user", "content": recommendations[2]})
-        st.session_state.show_recs = False
-        st.session_state.rec_selected = True
-        rerun()
-    if col_right.button(recommendations[1], key="rec_1", use_container_width=True):
-        st.session_state.history.append({"role": "user", "content": recommendations[1]})
-        st.session_state.show_recs = False
-        st.session_state.rec_selected = True
-        rerun()
-    if col_right.button(recommendations[3], key="rec_3", use_container_width=True):
-        st.session_state.history.append({"role": "user", "content": recommendations[3]})
-        st.session_state.show_recs = False
-        st.session_state.rec_selected = True
-        rerun()
+# 6) HTML Button to jump to the Chat App page
+st.markdown(
+    """
+<div style="text-align:center; margin:2rem 0;">
+  <a href="chat_app" style="text-decoration:none;">
+    <button style="
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+    ">
+      💬 Open Chat App
+    </button>
+  </a>
+</div>
+""",
+    unsafe_allow_html=True,
+)
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 7) Render the conversation so far
-for msg in st.session_state.history:
-    if msg["role"] == "user":
-        st.chat_message("user").write(msg["content"])
-    else:
-        st.chat_message("assistant").write(msg["content"])
-# ─────────────────────────────────────────────────────────────────────────────
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 8) Typewriter effect helper
-def typewriter(message_text):
-    placeholder = st.empty()
-    text = ""
-    for word in message_text.split():
-        text += word + " "
-        placeholder.write(text)
-        time.sleep(0.05)
-# ─────────────────────────────────────────────────────────────────────────────
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 9) Handle new prompts or selected recommendation
-if st.session_state.rec_selected:
-    question = st.session_state.history[-1]["content"]
-    with st.chat_message("assistant"):
-        st.write("⏳ Thinking…")
-        reply = asyncio.run(progress_conversation(question))
-        typewriter(reply)
-        st.session_state.history.append({"role": "assistant", "content": reply})
-    st.session_state.rec_selected = False
-
-else:
-    if prompt := st.chat_input("Type your legal question…"):
-        st.session_state.history.append({"role": "user", "content": prompt})
-        st.chat_message("user").write(prompt)
-
-        with st.chat_message("assistant"):
-            st.write("⏳ Thinking…")
-            reply = asyncio.run(progress_conversation(prompt))
-            typewriter(reply)
-            st.session_state.history.append({"role": "assistant", "content": reply})
-# ─────────────────────────────────────────────────────────────────────────────
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 10) Sidebar: clear history and reset
-with st.sidebar:
-    st.header("Controls")
-    if st.button("🗑️ Clear conversation"):
-        st.session_state.history = []
-        st.session_state.show_recs = True
-        st.session_state.rec_selected = False
-        rerun()
+# 7) Sidebar hint
+st.sidebar.success(
+    "Use the top menu to navigate:\n"
+    "- **Home** (this page)\n"
+    "- **Chat App** (your chatbot)"
+)
 # ─────────────────────────────────────────────────────────────────────────────
