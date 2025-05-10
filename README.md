@@ -4,6 +4,22 @@ Qanooni is a Streamlit-based legal assistant chatbot designed to help users navi
 
 ---
 
+## 🧩 Problem & Solution
+
+### The Problem
+Accessing and understanding the Saudi Labor Law is difficult — especially for individuals — due to complex language, scattered sources, and lack of accessible legal tools.
+
+### Our Solution
+**Qanooni** simplifies legal access by offering:
+- Natural-language Q&A grounded in official law
+- Smart retrieval using semantic search
+- Clear references to specific articles
+- Easy access through a user-friendly chat interface
+- A focused scope on Saudi Labor Law for high accuracy
+
+
+---
+
 ## 🚀 Features
 
 - **Intuitive Chat Interface:** Natural-language Q\&A over Labor Law chapters and articles.
