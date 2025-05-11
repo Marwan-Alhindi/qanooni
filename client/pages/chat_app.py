@@ -30,7 +30,7 @@ st.set_page_config(
 col_logo, col_title = st.columns([1, 9], gap="small")
 with col_logo:
     if logo_img:
-        st.image(logo_img, width=128)
+        st.image(logo_img, width=800)
 with col_title:
     st.markdown(
         """
@@ -58,6 +58,7 @@ if "show_recs" not in st.session_state:
 if "rec_selected" not in st.session_state:
     st.session_state.rec_selected = False
 
+
 # 7) Show recommended prompts on first load
 recommendations = [
     "When can I deserve a vacation?",
@@ -71,10 +72,11 @@ if st.session_state.show_recs:
     for idx, q in enumerate(recommendations):
         col = col_l if idx % 2 == 0 else col_r
         if col.button(q, key=f"rec_{idx}", use_container_width=True):
+            # Append the question to the history
             st.session_state.history.append({"role": "user", "content": q})
+            # Hide recommendations and set the selected flag
             st.session_state.show_recs = False
             st.session_state.rec_selected = True
-            rerun()
 
 # 8) Render chat history
 for msg in st.session_state.history:
@@ -116,6 +118,8 @@ def display_assistant_reply(reply):
                       border:none;
                       border-radius:0.25rem;
                       cursor:pointer;
+                      text-align: right;
+
                     ">
                       🔗 {label}
                     </button>
@@ -126,14 +130,22 @@ def display_assistant_reply(reply):
             )
     else:
         typewriter(reply)
-
 # 11) If a recommended question was clicked
 if st.session_state.rec_selected:
     question = st.session_state.history[-1]["content"]
     with st.chat_message("assistant"):
-        st.write("⏳ Thinking…")
+        placeholder = st.empty()  # Create a placeholder
+        placeholder.write("⏳ Thinking…")  # Display the "Thinking..." message
         reply = asyncio.run(progress_conversation(question))
-    display_assistant_reply(reply)
+        placeholder.empty()  # Clear the placeholder
+
+        # Use the typewriter effect to display the response word by word
+        response_text = ""  # Initialize an empty string to build the response
+        for word in (reply["content"] if isinstance(reply, dict) else reply).split():
+            response_text += word + " "  # Append the next word
+            placeholder.write(response_text)  # Update the placeholder with the new text
+            time.sleep(0.1)  # Adjust the delay for typing effect
+
     st.session_state.history.append({
         "role": "assistant",
         "content": (reply["content"] if isinstance(reply, dict) else reply)
@@ -146,10 +158,19 @@ elif prompt := st.chat_input("Type your legal question…"):
     st.chat_message("user").write(prompt)
 
     with st.chat_message("assistant"):
-        st.write("⏳ Thinking…")
+        placeholder = st.empty()  # Create a placeholder
+        placeholder.write("⏳ Thinking…")  # Display the "Thinking..." message
+        time.sleep(0)  # Wait for 3 seconds
         reply = asyncio.run(progress_conversation(prompt))
+        placeholder.empty()  # Clear the placeholder
 
-    display_assistant_reply(reply)
+        # Use the typewriter effect to display the response word by word
+        response_text = ""  # Initialize an empty string to build the response
+        for word in (reply["content"] if isinstance(reply, dict) else reply).split():
+            response_text += word + " "  # Append the next word
+            placeholder.write(response_text)  # Update the placeholder with the new text
+            time.sleep(0.01)  # Adjust the delay for typing effect
+
     st.session_state.history.append({
         "role": "assistant",
         "content": (reply["content"] if isinstance(reply, dict) else reply)
