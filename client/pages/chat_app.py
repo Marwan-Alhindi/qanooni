@@ -5,6 +5,8 @@ import time
 import streamlit as st
 from PIL import Image
 
+from qanooni.server.conversation_handler import progress_conversation
+
 # ─────────────────────────────────────────────────────────────────────────────
 # 1) Compute project root so we can find logo.png & qanooni package
 ROOT = os.path.abspath(
