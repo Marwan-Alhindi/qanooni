@@ -29,7 +29,7 @@ with col2:
     logo_col, title_col = st.columns([2, 6], gap="small")
     with logo_col:
         if logo_img:
-            st.image(logo_img, width=80)
+            st.image(logo_img, width=800)
     with title_col:
         st.markdown(
             "<h1 style='margin:0; padding-top:0.5rem;'>Qanooni</h1>",
