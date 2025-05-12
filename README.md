@@ -186,11 +186,10 @@ You run embedding generation *client-side* or in your server, and then store the
   
 Example:
 ```sql
-CREATE TABLE law_articles (
-  id serial PRIMARY KEY,
-  title text,
-  content text,
-  embedding vector(1536)
+CREATE TABLE public.articles (
+  article_number   INTEGER      PRIMARY KEY,
+  article_text     TEXT         NOT NULL,
+  embedding        VECTOR(1536) NOT NULL
 );
 ```
 
