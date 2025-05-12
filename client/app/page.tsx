@@ -17,16 +17,36 @@ export default function Home() {
           احصل على إجابات قانونية فورية ودقيقة مبنية على نصوص القوانين المحلية. 
           وفر وقتك وجهدك في البحث وفهم حقوقك والتزاماتك.
         </p>
-        <div className="space-x-4">
+        <div className="flex space-x-4" dir="rtl">
           <Link
             href="/auth/register"
-            className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+            className="
+              inline-block
+              px-8 py-3
+              bg-green-600 text-white
+              rounded-lg shadow
+              hover:bg-green-700
+              transition
+              whitespace-nowrap
+              min-w-max
+            "
           >
             إنشاء حساب
           </Link>
+
           <Link
             href="/auth/login"
-            className="px-6 py-3 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition"
+            className="
+              inline-block
+              px-8 py-3
+              border border-green-600
+              text-green-600
+              rounded-lg
+              hover:bg-green-50
+              transition
+              whitespace-nowrap
+              min-w-max
+            "
           >
             تسجيل الدخول
           </Link>
