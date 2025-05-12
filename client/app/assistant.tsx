@@ -24,15 +24,15 @@ export const Assistant = () => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
+                  {/* <BreadcrumbLink href="#">
                     محادثة
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
+                  </BreadcrumbLink> */}
+                {/* </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>
+                <BreadcrumbItem> */}
+                  {/* <BreadcrumbPage>
                     اسم المحادثة
-                  </BreadcrumbPage>
+                  </BreadcrumbPage> */}
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
