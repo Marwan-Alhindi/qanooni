@@ -192,7 +192,7 @@ CREATE TABLE law_articles (
   content text,
   embedding vector(1536)
 );
-
+```
 
 ## 📝 Contributing
 
