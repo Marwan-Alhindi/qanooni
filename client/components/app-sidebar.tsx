@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Github, MessagesSquare } from "lucide-react"
+// import { Github, MessagesSquare } from "lucide-react"
 import Link from "next/link"
 import {
   Sidebar,
@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { ThreadList } from "./assistant-ui/thread-list"
+// import { ThreadList } from "./assistant-ui/thread-list"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
