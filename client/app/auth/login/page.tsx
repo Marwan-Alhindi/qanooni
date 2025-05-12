@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 
 export default function LoginPage() {
-  const [email, setEmail]     = useState('')
+  const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError]     = useState<string|null>(null)
+  const [error, setError]       = useState<string|null>(null)
   const router = useRouter()
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -37,12 +37,18 @@ export default function LoginPage() {
         onChange={e => setPassword(e.target.value)}
         required
       />
-      <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">
+      <button
+        type="submit"
+        className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded transition"
+      >
         دخول
       </button>
       <p className="text-center text-sm">
         لا تملك حساب؟{' '}
-        <Link href="/auth/register" className="text-blue-600 underline">
+        <Link
+          href="/auth/register"
+          className="text-green-600 hover:text-green-700 underline transition"
+        >
           إنشاء حساب
         </Link>
       </p>
