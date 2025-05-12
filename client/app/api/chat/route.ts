@@ -102,7 +102,7 @@ export async function POST(req: Request) {
   const question = last.content;
 
   // 4) Fetch context from FastAPI
-  const ctxRes = await fetch("http://localhost:8000/context", {
+  const ctxRes = await fetch("https://qanooni-rr8b.onrender.com/context", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question }),
