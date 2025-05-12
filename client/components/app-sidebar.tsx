@@ -42,8 +42,57 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <ThreadList />
+      <SidebarContent className="ml-4 mt-4">
+          <p className="flex justify-center">العمل</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">التجارة</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">الشركات</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">المنافسة وعدم الاحتكار</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">حماية المستهلك</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">الشركات التأمينية</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">الضريبة والرسوم</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">الإفلاس</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">الجرائم المعلوماتية</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">مكافحة الفساد</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">مكافحة غسل الأموال وتمويل الإرهاب</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">التحكيم التجاري</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">الاستثمار الأجنبي</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">حماية الحقوق الفكرية</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">المرور</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">البيئة</p>
+          <div className="border-b border-gray-200"></div>
+
+          <p className="flex justify-center">النظام البلدي</p>
+          <div className="border-b border-gray-200"></div>
       </SidebarContent>
       
       <SidebarRail />
