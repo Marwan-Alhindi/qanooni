@@ -203,14 +203,16 @@ async def context_endpoint(req: ContextRequest):
 
         # retrieve top-5 laws
         docs = await retriever.aget_relevant_documents(req.question, k=5)
-        laws = [
-            {
-                "title": f"Article {d.metadata.get('article_number', idx+1)}",
+        laws = []
+        for idx, d in enumerate(docs):
+            article_number = d.metadata.get("article_number", idx + 1)
+            title = f"Article {article_number}"
+            url = f"https://nezams.com/نظام-العمل/#subject-{article_number}"
+            laws.append({
+                "title": title,
                 "content": d.page_content or "",
-            }
-            for idx, d in enumerate(docs)
-        ]
-
+                "url": url
+            })
         return ContextResponse(
             system=extra_system,
             message=extra_message,
