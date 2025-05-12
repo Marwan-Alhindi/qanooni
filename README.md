@@ -164,6 +164,36 @@ When you reference or quote the law in your README or other docs, use these head
 
 ---
 
+# 🔍 Supabase Embeddings & Retrieval Overview
+
+Supabase provides a PostgreSQL-based stack with support for **vector embeddings**, search, and retrieval using the `pgvector` extension. This allows developers to build semantic search systems using their own embedding models and integrate it directly with the database.
+
+---
+
+## 🧠 How Supabase Handles Embeddings
+
+### 1. **Embedding Generation**
+- Supabase does **not** generate embeddings itself — you need to use external models such as:
+  - OpenAI (`text-embedding-ada-002`)
+  - Hugging Face Transformers
+  - Cohere, etc.
+
+You run embedding generation *client-side* or in your server, and then store the resulting vectors in a `vector` column in PostgreSQL.
+
+### 2. **Storing in PostgreSQL (with `pgvector`)**
+- Supabase enables the `pgvector` extension, which allows storing and querying high-dimensional vectors.
+- You define a column of type `vector(1536)` (e.g., for OpenAI embeddings).
+  
+Example:
+```sql
+CREATE TABLE law_articles (
+  id serial PRIMARY KEY,
+  title text,
+  content text,
+  embedding vector(1536)
+);
+
+
 ## 📝 Contributing
 
 Contributions are welcome! Please open issues or pull requests for any bugs, feature requests, or improvements. Follow the standard GitHub workflow:
