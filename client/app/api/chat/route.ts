@@ -48,7 +48,7 @@ export async function POST(req: Request) {
   const question = messages[messages.length - 1]?.content ?? "";
 
   // RAG
-  const ctxRes = await fetch("https://qanooni-1.onrender.com/context", {
+  const ctxRes = await fetch("https://qanooni-rr8b.onrender.com/context", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question }),
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
   const augmentedMessages = [...messages, extraMsg];
 
   // Finetuned
-  const fineRes = await fetch("https://qanooni-1.onrender.com/finetuned", {
+  const fineRes = await fetch("https://qanooni-rr8b.onrender.com/finetuned", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question }),
@@ -110,6 +110,7 @@ export async function POST(req: Request) {
     "\n✅ الآن طبق هذا التنسيق على السؤال التالي:",
     "السياق القانوني:\n" + lawContext,
     "المراجع:\n" + laws.map((l) => `- ${l.url}`).join("\n"),
+    
   ]
     .filter(Boolean)
     .join("\n\n");
