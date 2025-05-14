@@ -94,6 +94,7 @@ const defaultComponents = memoizeMarkdownComponents({
   ),
   ul: ({ className, ...props }) => (
     <ul className={cn("my-5 ml-6 list-disc [&>li]:mt-2", className)} {...props} />
+    // expand - make sure to prompt gpt for a markdown format
   ),
   ol: ({ className, ...props }) => (
     <ol className={cn("my-5 ml-6 list-decimal [&>li]:mt-2", className)} {...props} />
