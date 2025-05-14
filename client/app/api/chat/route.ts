@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   };
 
   const rawMessages = body.messages ?? [];
-  const initialSystem = body.system ?? "";
+  // const initialSystem = body.system ?? "";
   const tools = body.tools ?? {};
 
   const messages: CoreMessage[] = rawMessages.map((m) => {
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   }
 
 
-  const { system: extraSystem = "", message: extraMsgRaw, laws } =
+  const {message: extraMsgRaw, laws } =
     (await ctxRes.json()) as {
       system?: string;
       message: IncomingMessage;
